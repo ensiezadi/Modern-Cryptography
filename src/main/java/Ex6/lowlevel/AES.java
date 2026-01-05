@@ -44,9 +44,9 @@ public class AES {
         0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
     };
 
-    private int Nk; // key length in words
-    private int Nr; // number of rounds
-    private int[] w; // key schedule
+    private final int Nk; // key length in words
+    private final int Nr; // number of rounds
+    private final int[] w; // key schedule
 
     public AES(byte[] key) {
         this.Nk = key.length / 4;
@@ -61,11 +61,11 @@ public class AES {
             w[i] = ((key[4 * i] & 0xff) << 24) |
                    ((key[4 * i + 1] & 0xff) << 16) |
                    ((key[4 * i + 2] & 0xff) << 8) |
-    private static final int[] rcon = {
-        0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
-    };
+                   (key[4 * i + 3] & 0xff);
+            i++;
+        }
 
-// ... existing code ...
+        i = Nk;
         while (i < 4 * (Nr + 1)) {
             int temp = w[i - 1];
             if (i % Nk == 0) {
@@ -162,7 +162,7 @@ public class AES {
     private void subBytes(int[][] state) {
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                state[r][c] = sbox[state[r][c]];
+                state[r][c] = sbox[state[r][c] & 0xFF];
             }
         }
     }
@@ -170,7 +170,7 @@ public class AES {
     private void invSubBytes(int[][] state) {
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                state[r][c] = rsbox[state[r][c]];
+                state[r][c] = rsbox[state[r][c] & 0xFF];
             }
         }
     }
